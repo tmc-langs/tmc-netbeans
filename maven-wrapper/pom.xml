@@ -4,7 +4,7 @@
 
     <groupId>fi.helsinki.cs.tmc</groupId>
     <artifactId>maven-wrapper</artifactId>
-    <version>1.6</version>
+    <version>1.7</version>
     <packaging>nbm</packaging>
 
     <name>TMC Maven Wrapper</name>
@@ -315,6 +315,21 @@
             <artifactId>javax-websocket-client-impl</artifactId>
             <version>9.2.5.v20141112</version>
         </dependency>
+        <dependency>
+            <groupId>fi.helsinki.cs.tmc</groupId>
+            <artifactId>tmc-langs-framework</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>fi.helsinki.cs.tmc</groupId>
+            <artifactId>tmc-langs-util</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>fi.helsinki.cs.tmc</groupId>
+            <artifactId>tmc-langs-ant</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
     </dependencies>
 
@@ -333,9 +348,7 @@
                         <publicPackage>org.yaml.snakeyaml</publicPackage>
                         <publicPackage>org.apache.http.*</publicPackage>
                         <publicPackage>org.apache.commons.*</publicPackage>
-                        <publicPackage>fi.helsinki.cs.tmc.stylerunner.*</publicPackage>
-                        <publicPackage>fi.helsinki.cs.tmc.testrunner.*</publicPackage>
-                        <publicPackage>fi.helsinki.cs.tmc.testscanner.*</publicPackage>
+                        <publicPackage>fi.helsinki.cs.tmc.*</publicPackage>
                         <publicPackage>org.cometd.*</publicPackage>
                         <publicPackage>org.eclipse.jetty.*</publicPackage>
                         <publicPackage>org.slf4j.*</publicPackage>

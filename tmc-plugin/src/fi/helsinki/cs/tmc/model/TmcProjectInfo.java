@@ -2,6 +2,7 @@ package fi.helsinki.cs.tmc.model;
 
 import fi.helsinki.cs.tmc.utilities.zip.RecursiveZipper;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.regex.Pattern;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
@@ -38,6 +39,10 @@ public class TmcProjectInfo {
 
     public String getProjectDirAbsPath() {
         return FileUtil.toFile(getProjectDir()).getAbsolutePath();
+    }
+    
+    public Path getProjectDirAsPath() {
+        return getProjectDirAsFile().toPath();
     }
 
     public boolean isOpen() {

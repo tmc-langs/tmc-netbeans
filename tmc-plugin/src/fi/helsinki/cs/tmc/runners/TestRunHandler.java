@@ -6,6 +6,7 @@ import fi.helsinki.cs.tmc.data.TestRunResult;
 import fi.helsinki.cs.tmc.events.TmcEvent;
 import fi.helsinki.cs.tmc.events.TmcEventBus;
 import fi.helsinki.cs.tmc.exerciseSubmitter.ExerciseSubmitter;
+import fi.helsinki.cs.tmc.langs.util.ProjectTypeHandler;
 import fi.helsinki.cs.tmc.model.CourseDb;
 import fi.helsinki.cs.tmc.model.ProjectMediator;
 import fi.helsinki.cs.tmc.model.TmcProjectInfo;
@@ -26,6 +27,7 @@ public class TestRunHandler {
     private static final Logger log = Logger.getLogger(TestRunHandler.class.getName());
 
     public static class InvokedEvent implements TmcEvent {
+
         public final TmcProjectInfo projectInfo;
 
         public InvokedEvent(TmcProjectInfo projectInfo) {
@@ -39,6 +41,7 @@ public class TestRunHandler {
     private TestResultDisplayer resultDisplayer;
     private ExerciseSubmitter exerciseSubmitter;
     private CourseDb courseDb;
+    private ProjectTypeHandler projectTypeHandler;
 
     public TestRunHandler() {
         this.projectMediator = ProjectMediator.getInstance();
@@ -87,6 +90,8 @@ public class TestRunHandler {
                 resultDisplayer.showLocalRunResult(result.getTestCaseResults(), canSubmit, new Runnable() {
                     @Override
                     public void run() {
+                       
+                        
                         exerciseSubmitter.performAction(projectInfo.getProject());
                     }
                 }, resultCollector);
@@ -95,7 +100,7 @@ public class TestRunHandler {
             @Override
             public void bgTaskFailed(Throwable ex) {
                 log.log(INFO, "StartRunningTests failed message: {0}, trace: {1}",
-                        new Object[] {ex.getMessage(), Arrays.deepToString(ex.getStackTrace())});
+                        new Object[]{ex.getMessage(), Arrays.deepToString(ex.getStackTrace())});
                 dialogDisplayer.displayError("Failed to run the tests: " + ex.getMessage());
             }
 
@@ -106,6 +111,10 @@ public class TestRunHandler {
     }
 
     private AbstractExerciseRunner getRunner(TmcProjectInfo projectInfo) {
+        /**
+         * FIXME: the project type is now known here
+         *
+         */
         switch (projectInfo.getProjectType()) {
             case JAVA_MAVEN:
                 return new MavenExerciseRunner();

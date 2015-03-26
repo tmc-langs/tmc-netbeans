@@ -2,6 +2,8 @@ package fi.helsinki.cs.tmc.runners;
 
 import fi.helsinki.cs.tmc.data.Exercise;
 import fi.helsinki.cs.tmc.data.TestRunResult;
+import fi.helsinki.cs.tmc.langs.util.TaskExecutor;
+import fi.helsinki.cs.tmc.langs.util.TaskExecutorImpl;
 import fi.helsinki.cs.tmc.model.TmcProjectInfo;
 import fi.helsinki.cs.tmc.model.UserVisibleException;
 import fi.helsinki.cs.tmc.testscanner.TestMethod;
@@ -32,6 +34,10 @@ public class AntExerciseRunner extends AbstractJavaExerciseRunner {
 
     @Override
     public Callable<Integer> getCompilingTask(TmcProjectInfo projectInfo) {
+        
+        TaskExecutor executor = new TaskExecutorImpl();
+        executor.runTests(projectInfo.getProjectDirAsPath());
+        
         Project project = projectInfo.getProject();
         FileObject buildScript = project.getProjectDirectory().getFileObject("build.xml");
         if (buildScript == null) {
