@@ -7,6 +7,8 @@ import fi.helsinki.cs.tmc.langs.util.TaskExecutorImpl;
 import fi.helsinki.cs.tmc.model.ProjectMediator;
 import fi.helsinki.cs.tmc.model.TmcProjectInfo;
 import fi.helsinki.cs.tmc.model.TmcSettings;
+import fi.helsinki.cs.tmc.stylerunner.CheckstyleRunner;
+import fi.helsinki.cs.tmc.stylerunner.exception.TMCCheckstyleException;
 import fi.helsinki.cs.tmc.stylerunner.validation.CheckstyleResult;
 import fi.helsinki.cs.tmc.stylerunner.validation.ValidationResult;
 import fi.helsinki.cs.tmc.ui.ConvenientDialogDisplayer;
@@ -36,7 +38,6 @@ public final class CheckstyleRunHandler implements Runnable {
             public void bgTaskFailed(final Throwable exception) {
                 Exceptions.printStackTrace(exception);
                 dialogDisplayer.displayError("Failed to validate the code.");
-
             }
 
             @Override
@@ -45,7 +46,6 @@ public final class CheckstyleRunHandler implements Runnable {
 
             @Override
             public void bgTaskReady(final Object nothing) {
-
                 resultCollector.setValidationResult(validationResult);
             }
         });
@@ -53,19 +53,31 @@ public final class CheckstyleRunHandler implements Runnable {
 
     @Override
     public void run() {
-
         final TmcProjectInfo projectInfo = ProjectMediator.getInstance().wrapProject(project);
 
         // Save all files
         ProjectMediator.getInstance().saveAllFiles();
 
-        final Locale locale = TmcSettings.getDefault().getErrorMsgLocale();
         Optional<ValidationResult> result = exec.runCheckCodeStyle(projectInfo.getProjectDirAsPath());
+
         if (result.isPresent()) {
             validationResult = result.get();
-        } else {
-            ConvenientDialogDisplayer.getDefault().displayError("Checkstyle audit failed.");
+            return;
+        }
 
+        // Fallback to old behaviour
+        final String projectType = projectInfo.getProjectType().name();
+
+        if (!projectType.equals("JAVA_SIMPLE") && !projectType.equals("JAVA_MAVEN")) {
+            return;
+        }
+
+        try {
+            final Locale locale = TmcSettings.getDefault().getErrorMsgLocale();
+            validationResult = new CheckstyleRunner(projectInfo.getProjectDirAsFile(), locale).run();
+        } catch (TMCCheckstyleException exception) {
+            ConvenientDialogDisplayer.getDefault().displayError("Checkstyle audit failed.");
+            Exceptions.printStackTrace(exception);
         }
     }
 }
