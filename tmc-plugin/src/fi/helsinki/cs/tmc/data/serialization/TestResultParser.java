@@ -59,6 +59,10 @@ public class TestResultParser {
     
     public TestRunResult parseLangsResults(RunResult runResult) {
         log.log(INFO, "Starting to parse TMC-Langs test results.");
+        if (runResult.status == RunResult.Status.COMPILE_FAILED) {
+            return new TestRunResult(TestRunResult.Status.COMPILE_FAILED);
+            
+        }
         if (runResult.status == RunResult.Status.TESTS_FAILED || runResult.status == RunResult.Status.PASSED) {
             List<TestCaseResult> testCases = new ArrayList<TestCaseResult>();
             
