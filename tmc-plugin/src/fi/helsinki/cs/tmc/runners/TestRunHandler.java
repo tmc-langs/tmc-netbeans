@@ -7,6 +7,7 @@ import fi.helsinki.cs.tmc.data.TestRunResult;
 import fi.helsinki.cs.tmc.events.TmcEvent;
 import fi.helsinki.cs.tmc.events.TmcEventBus;
 import fi.helsinki.cs.tmc.exerciseSubmitter.ExerciseSubmitter;
+import fi.helsinki.cs.tmc.langs.util.ProjectTypeHandler;
 import fi.helsinki.cs.tmc.model.CourseDb;
 import fi.helsinki.cs.tmc.model.ProjectMediator;
 import fi.helsinki.cs.tmc.model.TmcProjectInfo;
@@ -88,11 +89,11 @@ public class TestRunHandler {
     }
 
     private AbstractExerciseRunner getRunner(TmcProjectInfo projectInfo) {
-        return new LangsExerciseRunner();
-        
-        /**
-         * FIXME: the project type is now known here
-         *
+        if (ProjectTypeHandler.getLanguagePlugin(projectInfo.getProjectDirAsPath()).isPresent()) {
+            return new LangsExerciseRunner();
+        }
+
+        // Fallback to old behaviour if langs doesn't regocnize the project type
         switch (projectInfo.getProjectType()) {
             case JAVA_MAVEN:
                 return new MavenExerciseRunner();
@@ -103,7 +104,6 @@ public class TestRunHandler {
             default:
                 throw new IllegalArgumentException("Unknown project type: " + projectInfo.getProjectType());
         }
-                  */
 
     }
 }
