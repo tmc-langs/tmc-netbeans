@@ -1,14 +1,18 @@
 package fi.helsinki.cs.tmc.data;
 
+import fi.helsinki.cs.tmc.langs.RunResult;
+import fi.helsinki.cs.tmc.langs.TestResult;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestRunResult {
+
     public static enum Status {
+
         PASSED,
         COMPILE_FAILED
     }
-    
+
     private final List<TestCaseResult> testCaseResults;
     public final Status status;
 

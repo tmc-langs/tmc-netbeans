@@ -34,7 +34,7 @@ public class AntExerciseRunner extends AbstractJavaExerciseRunner {
     private static final Logger log = Logger.getLogger(AntExerciseRunner.class.getName());
     private static final Integer SUCCESS = 0;
 
-
+    @Override
     public Callable<TestRunResult> getTestRunningTask(final TmcProjectInfo projectInfo) {
         return new Callable<TestRunResult>() {
             @Override

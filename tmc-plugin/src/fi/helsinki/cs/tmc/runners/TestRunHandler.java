@@ -88,10 +88,11 @@ public class TestRunHandler {
     }
 
     private AbstractExerciseRunner getRunner(TmcProjectInfo projectInfo) {
+        return new LangsExerciseRunner();
+        
         /**
          * FIXME: the project type is now known here
          *
-         */
         switch (projectInfo.getProjectType()) {
             case JAVA_MAVEN:
                 return new MavenExerciseRunner();
@@ -102,5 +103,7 @@ public class TestRunHandler {
             default:
                 throw new IllegalArgumentException("Unknown project type: " + projectInfo.getProjectType());
         }
+                  */
+
     }
 }

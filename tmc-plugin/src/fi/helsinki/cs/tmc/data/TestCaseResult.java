@@ -1,5 +1,6 @@
 package fi.helsinki.cs.tmc.data;
 
+import fi.helsinki.cs.tmc.langs.TestResult;
 import fi.helsinki.cs.tmc.testrunner.CaughtException;
 import fi.helsinki.cs.tmc.testrunner.TestCase;
 import static fi.helsinki.cs.tmc.testrunner.TestCase.Status.*;
@@ -65,6 +66,14 @@ public class TestCaseResult {
         tcr.successful = (tc.status == PASSED);
         tcr.message = tc.message;
         tcr.exception = tc.exception;
+        return tcr;
+    }
+    
+    public static TestCaseResult fromTestResult(TestResult tr) {
+        TestCaseResult tcr = new TestCaseResult();
+        tcr.name = tr.name;
+        tcr.successful = tr.passed;
+        tcr.message = tr.errorMessage;
         return tcr;
     }
 }
