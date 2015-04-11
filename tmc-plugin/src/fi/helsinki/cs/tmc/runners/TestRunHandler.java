@@ -7,6 +7,7 @@ import fi.helsinki.cs.tmc.data.TestRunResult;
 import fi.helsinki.cs.tmc.events.TmcEvent;
 import fi.helsinki.cs.tmc.events.TmcEventBus;
 import fi.helsinki.cs.tmc.exerciseSubmitter.ExerciseSubmitter;
+import fi.helsinki.cs.tmc.langs.NoLanguagePluginFoundException;
 import fi.helsinki.cs.tmc.langs.util.ProjectTypeHandler;
 import fi.helsinki.cs.tmc.model.CourseDb;
 import fi.helsinki.cs.tmc.model.ProjectMediator;
@@ -18,6 +19,7 @@ import fi.helsinki.cs.tmc.ui.ConvenientDialogDisplayer;
 import fi.helsinki.cs.tmc.ui.TestResultDisplayer;
 import fi.helsinki.cs.tmc.utilities.BgTask;
 import fi.helsinki.cs.tmc.utilities.BgTaskListener;
+import java.util.logging.Level;
 import static java.util.logging.Level.INFO;
 import java.util.logging.Logger;
 import org.netbeans.api.project.Project;
@@ -89,21 +91,22 @@ public class TestRunHandler {
     }
 
     private AbstractExerciseRunner getRunner(TmcProjectInfo projectInfo) {
-        if (ProjectTypeHandler.getLanguagePlugin(projectInfo.getProjectDirAsPath()).isPresent()) {
+        try {
+            ProjectTypeHandler.getLanguagePlugin(projectInfo.getProjectDirAsPath());
             return new LangsExerciseRunner();
+        } catch (NoLanguagePluginFoundException ex) {
+            log.log(Level.INFO, "TMC-langs cannot run tests for this project, falling back to old behaviour");
+            // Fallback to old behaviour if langs doesn't regocnize the project type
+            switch (projectInfo.getProjectType()) {
+                case JAVA_MAVEN:
+                    return new MavenExerciseRunner();
+                case JAVA_SIMPLE:
+                    return new AntExerciseRunner();
+                case MAKEFILE:
+                    return new MakefileExerciseRunner();
+                default:
+                    throw new IllegalArgumentException("Unknown project type: " + projectInfo.getProjectType());
+            }
         }
-
-        // Fallback to old behaviour if langs doesn't regocnize the project type
-        switch (projectInfo.getProjectType()) {
-            case JAVA_MAVEN:
-                return new MavenExerciseRunner();
-            case JAVA_SIMPLE:
-                return new AntExerciseRunner();
-            case MAKEFILE:
-                return new MakefileExerciseRunner();
-            default:
-                throw new IllegalArgumentException("Unknown project type: " + projectInfo.getProjectType());
-        }
-
     }
 }

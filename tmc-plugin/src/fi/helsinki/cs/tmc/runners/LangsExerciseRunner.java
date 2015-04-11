@@ -1,6 +1,5 @@
 package fi.helsinki.cs.tmc.runners;
 
-import com.google.common.base.Optional;
 import fi.helsinki.cs.tmc.data.TestRunResult;
 import fi.helsinki.cs.tmc.langs.RunResult;
 import fi.helsinki.cs.tmc.model.TmcProjectInfo;
@@ -13,19 +12,13 @@ public class LangsExerciseRunner extends AbstractExerciseRunner {
     private final TaskExecutor taskExecutor = new TaskExecutorImpl();
 
     @Override
-    public Callable<TestRunResult> getTestRunningTask(TmcProjectInfo projectInfo) {
-        final Optional<RunResult> runResult = taskExecutor.runTests(projectInfo.getProjectDirAsPath());
-
+    public Callable<TestRunResult> getTestRunningTask(final TmcProjectInfo projectInfo) {
         return new Callable<TestRunResult>() {
             @Override
             public TestRunResult call() throws Exception {
-                if (runResult.isPresent()) {
-                    return resultParser.parseLangsResults(runResult.get());
-                } else {
-                    throw new UnsupportedOperationException("Project type not supported yet.");
-                }
+                RunResult runResult = taskExecutor.runTests(projectInfo.getProjectDirAsPath());
+                return resultParser.parseLangsResults(runResult);
             }
         };
     }
-
 }

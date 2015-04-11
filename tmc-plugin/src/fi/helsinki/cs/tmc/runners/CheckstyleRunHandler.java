@@ -1,7 +1,7 @@
 package fi.helsinki.cs.tmc.runners;
 
-import com.google.common.base.Optional;
 import fi.helsinki.cs.tmc.data.ResultCollector;
+import fi.helsinki.cs.tmc.langs.NoLanguagePluginFoundException;
 import fi.helsinki.cs.tmc.langs.util.TaskExecutor;
 import fi.helsinki.cs.tmc.langs.util.TaskExecutorImpl;
 import fi.helsinki.cs.tmc.model.ProjectMediator;
@@ -58,26 +58,23 @@ public final class CheckstyleRunHandler implements Runnable {
         // Save all files
         ProjectMediator.getInstance().saveAllFiles();
 
-        Optional<ValidationResult> result = exec.runCheckCodeStyle(projectInfo.getProjectDirAsPath());
-
-        if (result.isPresent()) {
-            validationResult = result.get();
-            return;
-        }
-
-        // Fallback to old behaviour
-        final String projectType = projectInfo.getProjectType().name();
-
-        if (!projectType.equals("JAVA_SIMPLE") && !projectType.equals("JAVA_MAVEN")) {
-            return;
-        }
-
         try {
-            final Locale locale = TmcSettings.getDefault().getErrorMsgLocale();
-            validationResult = new CheckstyleRunner(projectInfo.getProjectDirAsFile(), locale).run();
-        } catch (TMCCheckstyleException exception) {
-            ConvenientDialogDisplayer.getDefault().displayError("Checkstyle audit failed.");
-            Exceptions.printStackTrace(exception);
+            validationResult = exec.runCheckCodeStyle(projectInfo.getProjectDirAsPath());
+        } catch (NoLanguagePluginFoundException ex) {
+            // Fallback to old behaviour
+            final String projectType = projectInfo.getProjectType().name();
+
+            if (!projectType.equals("JAVA_SIMPLE") && !projectType.equals("JAVA_MAVEN")) {
+                return;
+            }
+
+            try {
+                final Locale locale = TmcSettings.getDefault().getErrorMsgLocale();
+                validationResult = new CheckstyleRunner(projectInfo.getProjectDirAsFile(), locale).run();
+            } catch (TMCCheckstyleException exception) {
+                ConvenientDialogDisplayer.getDefault().displayError("Checkstyle audit failed.");
+                Exceptions.printStackTrace(exception);
+            }
         }
     }
 }
